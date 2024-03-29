@@ -1,15 +1,15 @@
 import Image from "next/image";
-import NavigationBar from "@/components/navbar"
-import {HeroSection} from "@/components/component/herosection" 
+import NavigationBar from "@/components/navbar";
+import { HeroSection } from "@/components/component/herosection";
 import { Divider } from "@nextui-org/react";
+import { Features } from "@/components/component/features";
+
 export default function Home() {
   return (
-   <>
-   <NavigationBar/>
-   <Divider />
-   <HeroSection/>
-   <Divider/>
-
-   </>
+    <div className="bg-gradient-to-br from-blue-200 to-purple-200 bg-opacity-50 backdrop-blur-lg">
+      <NavigationBar />
+      <HeroSection />
+      <Features />
+    </div>
   );
 }

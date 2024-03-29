@@ -16,6 +16,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
+    
     <html lang="en">
       <body className={inter.className}>
         <Providers>
@@ -23,5 +24,6 @@ export default function RootLayout({
         </Providers>
         </body>
     </html>
+    
   );
 }

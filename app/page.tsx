@@ -1,3 +1,4 @@
+
 import Image from "next/image";
 import NavigationBar from "@/components/navbar";
 import { HeroSection } from "@/components/component/herosection";
@@ -13,3 +14,7 @@ export default function Home() {
     </div>
   );
 }
+
+// TODO: ADD AUTHENTICATION VIA-NEXT JS
+// PROTECH THE ROUTES
+// DESIGN INTERFACE FOR DOCTORS ,PATIENTS AND LAB STAFF.

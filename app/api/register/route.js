@@ -5,10 +5,19 @@ import bcrypt from "bcryptjs";
 
 export async function POST(req) {
   try {
-    const { firstName,lastName, email, password,role } = await req.json();
+    const { firstName,lastName, email, password,role,hospital } = await req.json();
     const hashedPassword = await bcrypt.hash(password, 10);
     await dbConnect();
-    await User.create({ firstName,lastName, email, password: hashedPassword ,role});
+    //create user with hospital only if the user role is doctor
+    const userData = { firstName,lastName, email, password: hashedPassword ,role};
+    if (role === "doctor") {
+      userData.hospital = hospital;
+      
+    }
+    else{
+      userData.hospital = "";
+    }
+    await User.create({ firstName,lastName, email, password: hashedPassword ,role,hospital});
     
 
     return NextResponse.json({ message: "User registered." }, { status: 201 });

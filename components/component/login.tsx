@@ -84,7 +84,7 @@ export default function SignInForm() {
             </div>
           </form>
           <div className="mt-4 text-center text-sm text-gray-800">
-          Don't have an account?&nbsp;<Link href="/signup" className="underline"> Sign up </Link>
+          Dont have an account?&nbsp;<Link href="/signup" className="underline"> Sign up </Link>
           </div>
         </CardContent>
       </Card>

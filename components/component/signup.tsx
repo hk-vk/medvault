@@ -28,7 +28,7 @@ export default function SignUp() {
  const [hospital,setHospital]=useState("");
 
 
- const handleSubmit = async (event) => {
+ const handleSubmit = async (event:  React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!isLoaded) return;
 
@@ -41,7 +41,7 @@ export default function SignUp() {
     }
  };
 
- const handleVerify = async (e) => {
+ const handleVerify = async (e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault();
   if (!isLoaded) return;
 

@@ -15,7 +15,7 @@ export default function SignInForm() {
   const router = useRouter();
 
   // Start the sign-in process.
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!isLoaded) {
       return;

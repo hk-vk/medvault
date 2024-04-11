@@ -9,7 +9,7 @@ export async function POST(req) {
     const hashedPassword = await bcrypt.hash(password, 10);
     await dbConnect();
     //create user with hospital only if the user role is doctor
-    const userData = { firstName,lastName, email, password: hashedPassword ,role};
+    const userData = { firstName,lastName, email, password: hashedPassword ,role,hospital};
     if (role === "doctor") {
       userData.hospital = hospital;
       

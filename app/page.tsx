@@ -2,8 +2,9 @@
 import Image from "next/image";
 import NavigationBar from "@/components/navbar";
 import { HeroSection } from "@/components/component/herosection";
-import { Divider } from "@nextui-org/react";
+import { Divider, User } from "@nextui-org/react";
 import { Features } from "@/components/component/features";
+
 
 export default function Home() {
   return (
@@ -11,10 +12,8 @@ export default function Home() {
       <NavigationBar />
       <HeroSection />
       <Features />
+   
     </div>
   );
 }
 
-// TODO: ADD AUTHENTICATION VIA-NEXT JS
-// PROTECH THE ROUTES
-// DESIGN INTERFACE FOR DOCTORS ,PATIENTS AND LAB STAFF.

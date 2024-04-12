@@ -52,15 +52,17 @@ export default function SignUp() {
 
       // Prepare the user data to be sent to the database
       const userData = {
+        clerkId: completeSignUp.createdSessionId,
         firstName,
         lastName,
         email: emailAddress,
-        password, 
+        username: emailAddress.split('@')[0],
+        password: password,
         role,
         hospital: role === 'doctor' ? hospital : '',
       };
 
-      // Send the user data to the database
+      // Send the user data to the server
       const response = await fetch('/api/register', {
         method: 'POST',
         headers: {
@@ -72,7 +74,7 @@ export default function SignUp() {
       if (response.ok) {
         // Handle successful registration
         console.log('User registered successfully');
-        router.push("/");
+        router.push("/dashboard");
       } else {
         // Handle registration error
         console.error('Error registering user:', response.statusText);

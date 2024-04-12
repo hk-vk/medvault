@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { authMiddleware, redirectToSignIn } from "@clerk/nextjs";
 
 export default authMiddleware({
+    publicRoutes: ["/","/api/webhooks/clerk"],
     afterAuth(auth, req, evt) {
         // Redirect users to the dashboard after signing in
         if (auth.userId && !auth.isPublicRoute && req.nextUrl.pathname !== "/dashboard") {

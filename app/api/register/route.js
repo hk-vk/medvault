@@ -1,15 +1,15 @@
-import { dbConnect } from "../../../lib/db";
-import User from "../../../models/user";
+import User from "@/models/user";
+import { dbConnect } from "@/lib/db";
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 
 export async function POST(req) {
   try {
-    const { firstName,lastName, email, password,role,hospital } = await req.json();
+    const {clerkId, firstName,lastName, email,username, password,role,hospital } = await req.json();
     const hashedPassword = await bcrypt.hash(password, 10);
     await dbConnect();
     //create user with hospital only if the user role is doctor
-    const userData = { firstName,lastName, email, password: hashedPassword ,role,hospital};
+    const userData = {clerkId, firstName,lastName, email,username, password: hashedPassword ,role,hospital};
     if (role === "doctor") {
       userData.hospital = hospital;
       
@@ -17,7 +17,10 @@ export async function POST(req) {
     else{
       userData.hospital = "";
     }
-    await User.create({ firstName,lastName, email, password: hashedPassword ,role,hospital});
+    await User.create({ clerkId,firstName,lastName, email,username, password: hashedPassword ,role,hospital});
+    //console log if sucessfully created
+    
+
     
 
     return NextResponse.json({ message: "User registered." }, { status: 201 });

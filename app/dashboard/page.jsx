@@ -1,6 +1,7 @@
 
 import Link from "next/link"
 import { UserButton } from "@clerk/nextjs"
+import Dashboard from "../../components/component/dashboard"
 
 export default function Page() {
   return (
@@ -53,6 +54,7 @@ export default function Page() {
           </div>
         </div>
       </div>
+      <Dashboard/>
       
     </div>
   )

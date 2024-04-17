@@ -20,23 +20,42 @@ export default function SignInForm() {
     if (!isLoaded) {
       return;
     }
-
+  
     try {
       const result = await signIn.create({
         identifier: emailAddress,
         password,
       });
-
+  
       if (result.status === "complete") {
         console.log(result);
         await setActive({ session: result.createdSessionId });
         router.push("/dashboard");
       } else {
-        /* Investigate why the sign-in hasn't completed */
+        
         console.log(result);
+  
+        const response = await fetch('/api/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email: emailAddress, password }),
+        });
+  
+        if (response.ok) {
+          // Handle successful login
+          const result = await response.json();
+          console.log(result.message);
+          
+        } else {
+          // Handle login error
+          const error = await response.json();
+          console.error('Error:', error.message);
+        }
       }
     } catch (err: any) {
-      console.error("error", err.errors[0].longMessage);
+      console.error('Error:', err.message);
     }
   };
 

@@ -1,6 +1,7 @@
-import dbConnect from "../../../lib/db";
 import Image from "../../../models/images";
 import { NextResponse } from "next/server";
+import {dbConnect} from "../../../lib/db"
+// 
 
 export async function POST(req) {
   try {

@@ -21,6 +21,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/signup/page.jsx", "app/login/page.jsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/signup/page.jsx", "app/login/page.jsx", "app/api/upload/route.js", "components/component/patientpage.jsx"],
   "exclude": ["node_modules"]
 }

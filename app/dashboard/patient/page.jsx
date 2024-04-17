@@ -1,9 +1,9 @@
 import React from 'react'
-
+import PatientPage from '@/components/component/patientpage'
 const page = () => {
   return (
-    <div>page</div>
+    <PatientPage/>
   )
 }
 
-export default page
+export default page;

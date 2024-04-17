@@ -74,7 +74,7 @@ export default function SignUp() {
       if (response.ok) {
         // Handle successful registration
         console.log('User registered successfully');
-        router.push("/dashboard");
+        router.push(`/dashboard/${role}`);
       } else {
         // Handle registration error
         console.error('Error registering user:', response.statusText);

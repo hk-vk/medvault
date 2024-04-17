@@ -1,8 +1,11 @@
 import React from 'react'
-
+import LabStaffPage from '../../../components/component/labstaff'
 const page = () => {
   return (
-    <div>page</div>
+    <>
+  
+    <LabStaffPage />
+    </>
   )
 }
 

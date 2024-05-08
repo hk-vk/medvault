@@ -26,6 +26,31 @@ export default function SignUp() {
  const [role, setRole] = useState("doctor");
  const router = useRouter();
  const [hospital,setHospital]=useState("");
+ const [currentDoctor,setCurrentDoctor]=useState("");
+const [doctors, setDoctors] = useState([]);
+ const [doctorEmail, setDoctorEmail] = useState("");
+
+  
+  const handleDoctorSearch = async (e) => {
+    const searchQuery = e.target.value;
+    try {
+      const response = await fetch(`/api/fetchuser`);
+      const data = await response.json();
+      const doctors = data.filter((user: { role: string; firstName: string; lastName: string; }) => (user.role === "doctor") && (user.firstName.toLowerCase().includes(searchQuery.toLowerCase()) || user.lastName.toLowerCase().includes(searchQuery.toLowerCase())));
+      setDoctors(doctors);
+    } catch (error) {
+      console.error("Error searching for doctors:", error);
+    }
+  }
+
+
+
+ 
+ const handleDoctorSelect = (email: React.SetStateAction<string>) => {
+  setDoctorEmail(email)
+  setDoctors([]) //
+}
+
 
 
  const handleSubmit = async (event:  React.FormEvent<HTMLFormElement>) => {
@@ -60,6 +85,8 @@ export default function SignUp() {
         password: password,
         role,
         hospital: role === 'doctor' ? hospital : '',
+        currentDoctor: role === 'patient' ? doctorEmail : '',
+
       };
 
       // Send the user data to the server
@@ -152,6 +179,10 @@ export default function SignUp() {
                  onChange={(e) => setFirstName(e.target.value)}
                 />
               </div>
+              {!firstName && <span className="text-red-500">First name is required</span>}
+      {firstName && !/^[a-zA-Z]+$/.test(firstName) && (
+        <span className="text-red-500">First name must contain only letters</span>
+      )}
               <div className="grid gap-2">
                 <Label htmlFor="last-name" className="text-gray-800">
                  Last Name
@@ -165,6 +196,10 @@ export default function SignUp() {
                  onChange={(e) => setLastName(e.target.value)}
                 />
               </div>
+              {!lastName && <span className="text-red-500">Last name is required</span>}
+      {lastName && !/^[a-zA-Z]+$/.test(lastName) && (
+        <span className="text-red-500">Last name must contain only letters</span>
+      )}
             
               <div className="grid gap-2">
                 <Label htmlFor="email" className="text-gray-800">
@@ -180,6 +215,9 @@ export default function SignUp() {
                  onChange={(e) => setEmailAddress(e.target.value)}
                 />
               </div>
+              {!emailAddress && <span className="text-red-500">Email is required</span>}
+      {emailAddress && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailAddress) && (
+        <span className="text-red-500">Invalid email format</span>)}
               <div className="grid gap-2">
                 <Label htmlFor="password" className="text-gray-800">
                  Password
@@ -192,6 +230,10 @@ export default function SignUp() {
                  onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
+              {!password && <span className="text-red-500">Password is required</span>}
+      {password && password.length < 8 && (
+        <span className="text-red-500">Password must be at least 8 characters long</span>
+      )}
               <div className="grid gap-2">
                 <Label htmlFor="role" className="text-gray-800">
                  Role
@@ -204,10 +246,10 @@ export default function SignUp() {
                 >
                  <option value="doctor">Doctor</option>
                  <option value="patient">Patient</option>
-                 <option value="lab-staff">Lab Staff</option>
+                 <option value="labstaff">Lab Staff</option>
                 </select>
               </div>
-              {role === 'doctor' && (
+              {role === 'doctor'  &&  (
   <div className="grid gap-2">
     <Label htmlFor="hospital" className="text-gray-800">
       Hospital
@@ -222,6 +264,42 @@ export default function SignUp() {
     />
   </div>
 )}
+  
+
+{role === 'patient' && (
+  <div className="grid gap-2">
+  <Label htmlFor="doctor" className="text-gray-800">
+    Doctor
+  </Label>
+  <Input
+    id="doctor"
+    type="text"
+    placeholder="Search for Doctor"
+    className="bg-white bg-opacity-10 backdrop-blur-md p-2 rounded"
+    value={doctorEmail}
+    onChange={(e) => setDoctorEmail(e.target.value)}
+    onKeyUp={handleDoctorSearch}
+  />
+  
+  {doctors.length > 0 && (
+    <ul>
+      {doctors.map((doctor) => (
+        <li style={{ cursor: 'pointer', padding: '10px', border: '1px solid #ccc', margin: '10px 0', backgroundColor: '#f9f9f9',borderRadius:'5px'}} key={doctor.email} onClick={() => handleDoctorSelect(doctor.email)} >
+          {doctor.firstName} {doctor.lastName}
+        </li>
+      ))}
+    </ul>
+  )}
+    {role === 'patient' && !doctorEmail && (
+          <span className="text-red-500">Doctor is required for patients</span>
+        )}
+      </div>
+)}
+
+ 
+    
+    
+
 
            
               <Button

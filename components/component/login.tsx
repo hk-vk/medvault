@@ -7,14 +7,49 @@ import { Button } from '@nextui-org/react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useSession } from "@clerk/nextjs";
+
+//redirect  to dashboard/role based ono role
+
 
 export default function SignInForm() {
   const { isLoaded, signIn, setActive } = useSignIn();
   const [emailAddress, setEmailAddress] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
+  const { session } = useSession();
+ 
 
-  // Start the sign-in process.
+if(session){
+ const userEmail = session.user.primaryEmailAddress.emailAddress;
+}
+//  chekc for roles from db  find method and filrr tnen equalityusing Useremail
+ const fetchrole = async () => {
+  try{
+    const response = await fetch('/api/fetchuser');
+    const data = await response.json();
+    const role= data.filter((user:any) => user.email === userEmail);
+    console.log(role);
+    if(role[0].role === "patient"){
+      router.push('/patient');
+    }
+    else if(role[0].role === "doctor"){
+      router.push('/doctor');
+    }
+    else if(role[0].role === "labstaff"){
+      router.push('/labstaff');
+    }
+    
+    
+  
+    
+
+  }
+  catch(err: any){
+    console.error('Error:', err.message);
+  }
+}
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!isLoaded) {
@@ -30,7 +65,7 @@ export default function SignInForm() {
       if (result.status === "complete") {
         console.log(result);
         await setActive({ session: result.createdSessionId });
-        router.push("/dashboard");
+    
       } else {
         
         console.log(result);

@@ -15,7 +15,8 @@ const userSchema= new Schema(
             required: true
         },
         email:{type:String,
-            required:true
+            required:true,
+            unique:true,
         },
         username:{
             type:String,
@@ -33,6 +34,10 @@ const userSchema= new Schema(
         hospital:{
             type:String,
         }
+        ,
+        currentDoctor:{
+            type:String,
+        },
 
     }
 );

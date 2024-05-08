@@ -4,6 +4,11 @@ import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { TableHead, TableRow, TableHeader, TableCell, TableBody, Table } from "@/components/ui/table"
 import { useState } from "react"
+import { useSession } from "@clerk/nextjs"
+import { Label } from "@/components/ui/label"
+import { Input } from "../ui/input"
+
+
 function thresholdSegmentation(imageData, threshold) {
   let roiImageData = new ImageData(imageData.width, imageData.height);
   let nonRoiImageData = new ImageData(imageData.width, imageData.height);
@@ -42,8 +47,66 @@ export default function PatientPage() {
   const [nonRoiImage, setNonRoiImage] = useState(null);
   const [threshold, setThreshold] = useState(128);
   const [error, setError] = useState(null);
-  const [name, setName] = useState('');
-  const [doctorName,setDoctorName]=useState('');
+  const [patientName,setPatientName] = useState(null)
+  const [doctors,setDoctors] = useState([]);
+  const [currentDoctor,setCurrentDoctor] = useState("")
+  const { session } = useSession();
+  const [imageName,setImageName] = useState(null);
+const [imageDescription,setImageDescription] = useState(null);
+const [pathology,setPathology] = useState(null);
+const [doctorEmail,setDoctorEmail] = useState(null);
+const [patientEmail,setPatientEmail] = useState(null);
+const [imagePath, setImagePath] = useState(null);
+
+
+
+ if (!session || !session.user) {
+    return <div>Sign in to view this page</div>;
+ }
+
+
+
+
+ const userEmail = session.user.primaryEmailAddress.emailAddress;
+ //fetch the firstName+lastname of the patient from the database based on userEmail
+ const fetchAllDoctors = async () => {
+    try {
+      const response = await fetch(`/api/fetchuser`);
+      const data = await response.json();
+      const doctors = data.filter(user => user.role === "doctor");
+      setDoctors(doctors);
+    } catch (error) {
+      console.error("Error fetching doctors:", error);
+
+    }
+  }
+  //find current doctor name based on email
+  const fetchCurrentDoctor = async () => {
+    try {
+      const response = await fetch(`/api/fetchuser`);
+      const data = await response.json();
+      const patient = data.filter(user => user.email === doctorEmail);
+      setCurrentDoctor(patient[0].currentDoctor);
+    } catch (error) {
+      console.error("Error fetching current doctor:", error);
+    }
+  }
+  if(doctors.length === 0){
+    fetchCurrentDoctor();
+  }
+
+  const handleDoctorSelect = async (doctorEmail) => {
+    try {
+      const response = await fetch(`/api/updatedoctor`)
+      const data = await response.json();
+      const patient = data.filter(user => user.email === userEmail);
+      const doctor = data.filter(user => user.email === doctorEmail);
+      const body = {email: userEmail, doctorEmail: doctorEmail};
+    }
+    catch (error) { 
+      console.error("Error updating doctor:", error);
+    }
+  }
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
@@ -79,6 +142,62 @@ export default function PatientPage() {
     reader.readAsDataURL(file);
   };
 
+    
+
+
+      
+ const fetchPatientName = async () => {
+    try {
+      const response = await fetch(`/api/fetchuser`);
+      const data = await response.json();
+      const patient = data.filter(user => user.email === userEmail);
+      setPatientName(patient[0].firstName + " " + patient[0].lastName);
+      console.log(patientName)
+    } catch (error) {
+      console.error("Error fetching patient name:", error);
+    }
+  }
+if(patientName === null){
+  fetchPatientName();
+}
+
+
+  
+
+
+
+
+
+
+
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+   const formData = new FormData();
+    formData.append("name", imageName);
+    formData.append("description", imageDescription);
+    formData.append("pathology", pathology);
+    formData.append("doctorEmail", doctorEmail);
+    formData.append("patientEmail",patientEmail);
+    formData.append("image", imagePath);
+
+    
+  
+
+  try {
+    const response = await fetch('/api/upload-images', {
+      method: 'POST',
+      body: formData,
+    });
+
+    const data = await response.json();
+    console.log(data.message);
+  } catch (error) {
+    console.error('Error:', error);
+  }
+};
+
   const handleThresholdChange = (event) => {
     const newThreshold = parseInt(event.target.value, 10);
     setThreshold(newThreshold);
@@ -106,7 +225,7 @@ export default function PatientPage() {
               width="50"
             />
           </Avatar>
-          <span className="font-semibold">Radhakrishnan</span>
+          <span className="font-semibold">{patientName}</span>
         </div>
         <ul className="mt-8 space-y-2">
           <li className="font-semibold text-blue-500">Dashboard</li>
@@ -121,7 +240,12 @@ export default function PatientPage() {
             <div className="flex items-center justify-between p-4">
               <div>
                 <div className="text-sm text-gray-500">Current Doctor</div>
-                <div className="font-semibold">Dr John Doe</div>
+                {/* {//if no doctor is assigned, display "No doctor assigned" */}
+                <div className="font-semibold">{currentDoctor ? currentDoctor : "No doctor assigned"}</div>
+
+
+
+      
               </div>
               <Avatar>
                 <img
@@ -151,7 +275,12 @@ export default function PatientPage() {
 
           <div className="col-span-1 flex justify-end">
           <div className="mt-8">
+            <form action="submit">
+
           <input type="file" accept="image/*" onChange={handleImageUpload} />
+          <Button variant="" onClick={handleSubmit} >Upload scan</Button>
+          
+            </form>
           <div>
             <label htmlFor="threshold" className="mr-2">
               Threshold:
@@ -242,8 +371,34 @@ export default function PatientPage() {
               </TableBody>
             </Table>
           </Card>
+          {/* input filed to select doctors from database and abiltiy to select them */}
+          <div className="grid gap-2">
+              <Label htmlFor="doctor" className="text-gray-800">
+                Doctor
+              </Label>
+              <Input
+                id="doctor"
+                type="text"
+                placeholder="Search for Doctor"
+                className="bg-white bg-opacity-10 backdrop-blur-md p-2 rounded"
+                value={doctorEmail}
+                onChange={(e) => setDoctorEmail(e.target.value)}
+                onKeyUp={fetchAllDoctors}
+              />
+              {doctors.length > 0 && (
+                <ul>
+                  {doctors.map((doctor) => (
+                    <li style={{ cursor: 'pointer', padding: '10px', border: '1px solid #ccc', margin: '10px 0', backgroundColor: '#f9f9f9',borderRadius:'5px'}} key={doctor.email} onClick={() => handleDoctorSelect(doctor.email)} >
+                      {doctor.firstName} {doctor.lastName}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
         </div>
       </main>
     </div>
   )
 }
+

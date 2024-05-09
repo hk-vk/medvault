@@ -42,6 +42,57 @@ function thresholdSegmentation(imageData, threshold) {
   return { roiImageData, nonRoiImageData };
 }
 
+function lzwCompress(uncompressedData) {
+  const dictionary = new Map();
+  const bitsPerCode = 12;
+  const maxCodes = Math.pow(2, bitsPerCode);
+  let codeValue = 256;
+  let stringValue = "";
+  let compressedData = [];
+
+  for (let i = 0; i < 256; i++) {
+    dictionary.set(String.fromCharCode(i), i);
+  }
+
+  for (let i = 0; i < uncompressedData.length; i++) {
+    const currentChar = String.fromCharCode(uncompressedData[i]);
+    const currentString = stringValue + currentChar;
+
+    if (!dictionary.has(currentString)) {
+      compressedData.push(dictionary.get(stringValue));
+
+      if (codeValue < maxCodes) {
+        dictionary.set(currentString, codeValue);
+        codeValue++;
+      } else {
+        dictionary.forEach((value, key, map) => {
+          if (key.length > 1) {
+            map.delete(key);
+          }
+        });
+        codeValue = 257;
+        dictionary.set(currentString, codeValue++);
+      }
+
+      stringValue = currentChar;
+    } else {
+      stringValue = currentString;
+    }
+  }
+
+  if (stringValue !== "") {
+    compressedData.push(dictionary.get(stringValue));
+  }
+
+  return compressedData;
+}
+
+function compressImageData(imageData) {
+  const uncompressedData = new Uint8Array(imageData.data);
+  const compressedData = lzwCompress(uncompressedData);
+  return compressedData;
+}
+
 export default function PatientPage() {
   const [roiImage, setRoiImage] = useState(null);
   const [nonRoiImage, setNonRoiImage] = useState(null);
